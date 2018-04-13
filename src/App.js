@@ -6,23 +6,50 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.addItemToList = this.addItemToList.bind(this)
-    this.maintainValue = this.maintainValue.bind(this)
-    this.state = { description: '', todo_list: [] }
+    this.inputField  = React.createRef();
+    this.state = { todo_list: [] }
   }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    console.log('parent: getDerivedStateFromProps');
+    return null;
+  }
+
+  componentDidMount() {
+    console.log('parent: componentDidMount');
+    // API calls
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('parent: shouldComponentUpdate');
+    return true;
+  }
+
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    console.log('parent: getSnapshotBeforeUpdate');
+    return null;
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    console.log('parent: componentDidUpdate');
+  }
+
+  componentWillUnmount() {
+    console.log('parent: componentWillUnmount');
+  }
+
+  // componentDidCatch(error, info) {}
 
   addItemToList() {
-    let list = this.state.todo_list
-
-    list.push(this.state.description);
-    this.setState({
-      todo_list: list
-    });
-  }
-
-  maintainValue(e) {
-    this.setState({
-      description: e.target.value
-    })
+    let list = [...this.state.todo_list]
+    if(this.inputField.current.value !== '') {
+      list.push(this.inputField.current.value);
+      list.sort();
+      this.setState({
+        todo_list: list
+      });
+      this.inputField.current.value = ''
+    }
   }
 
   render() {
@@ -30,8 +57,10 @@ class App extends Component {
       <div className="App">
         <h1>To Do List</h1>
         <p>(Add new ToDo items to the list using the input box)</p>
-        <input type="text" onChange={ this.maintainValue } />
-        <button type="submit" onClick={ this.addItemToList }>Add</button>
+        <form action="#">
+          <input type="text" ref={ this.inputField }/>
+          <button type="submit" onClick={ this.addItemToList }>Add</button>
+        </form>
         <ol className="Todo">
           {
             this.state.todo_list.map((item, index) =>
